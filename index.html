@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Thumbnail Builder Pro</title>
+  <style>
+    body { background:#000; color:#fff; font-family:Arial; padding:20px; }
+    .thumb { width:320px; height:180px; background:#111; margin:20px; position:relative; border:2px solid #0f0; display:inline-block; }
+    .thumb img.bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0.3; }
+    .thumb img.logo { position:absolute; width:50px; height:50px; object-fit:contain; }
+    .text { position:absolute; width:100%; text-align:center; }
+    #controls input, #controls select { margin:5px; }
+  </style>
+</head>
+<body>
+<h1>Thumbnail Generator</h1>
+<div id="controls">
+  <h3>Common Inputs</h3>
+  Heading: <input id="heading" type="text"><br>
+  Subheading: <input id="subheading" type="text"><br>
+  Extra Text: <input id="extra" type="text"><br>
+  Class/Tag: <input id="tag" type="text"><br>
+  Duration: <input id="duration" type="text"><br>
+  Background Image: <input id="bgimg" type="file" accept="image/*"><br>
+  Logo Image: <input id="logoimg" type="file" accept="image/*"><br>
+  Heading Font Size: <input id="hsize" type="number" value="24"><br>
+  Subheading Font Size: <input id="ssize" type="number" value="18"><br>
+  Text Color: <input id="color" type="color" value="#ffffff"><br>
+  Logo Position:
+  <select id="logoPos">
+    <option value="top-left">Top Left</option>
+    <option value="top-right">Top Right</option>
+    <option value="bottom-left">Bottom Left</option>
+    <option value="bottom-right">Bottom Right</option>
+  </select><br>
+  <button onclick="renderAll()">Render All</button>
+  <button onclick="resetAll()">Reset</button>
+</div>
+<div id="thumbnails"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const variants = 5;
+const thumbs = document.getElementById('thumbnails');
+for(let i=0;i<variants;i++){
+  const t=document.createElement('div');
+  t.className='thumb';
+  t.id='thumb'+i;
+  t.innerHTML='<img class="bg"><img class="logo"><div class="text heading"></div><div class="text sub" style="bottom:40px"></div><div class="text extra" style="bottom:20px"></div><div class="text tag" style="top:10px;right:10px;position:absolute;width:auto"></div><div class="text duration" style="bottom:5px;right:5px;position:absolute;width:auto"></div><button onclick="downloadThumb('+i+')" style="position:absolute;bottom:-30px;left:0">Download</button>';
+  thumbs.appendChild(t);
+}
+function renderAll(){
+  const heading=document.getElementById('heading').value;
+  const sub=document.getElementById('subheading').value;
+  const extra=document.getElementById('extra').value;
+  const tag=document.getElementById('tag').value;
+  const duration=document.getElementById('duration').value;
+  const color=document.getElementById('color').value;
+  const hsize=document.getElementById('hsize').value;
+  const ssize=document.getElementById('ssize').value;
+  const logoPos=document.getElementById('logoPos').value;
+  const bgFile=document.getElementById('bgimg').files[0];
+  const logoFile=document.getElementById('logoimg').files[0];
+  thumbs.querySelectorAll('.thumb').forEach((t)=>{
+    t.querySelector('.heading').textContent=heading;
+    t.querySelector('.heading').style.fontSize=hsize+'px';
+    t.querySelector('.heading').style.color=color;
+    t.querySelector('.sub').textContent=sub;
+    t.querySelector('.sub').style.fontSize=ssize+'px';
+    t.querySelector('.sub').style.color=color;
+    t.querySelector('.extra').textContent=extra;
+    t.querySelector('.extra').style.color=color;
+    t.querySelector('.tag').textContent=tag;
+    t.querySelector('.tag').style.color=color;
+    t.querySelector('.duration').textContent=duration;
+    t.querySelector('.duration').style.color=color;
+    const logo=t.querySelector('.logo');
+    logo.style.top = logoPos.includes('top') ? '5px':'auto';
+    logo.style.bottom = logoPos.includes('bottom') ? '5px':'auto';
+    logo.style.left = logoPos.includes('left') ? '5px':'auto';
+    logo.style.right = logoPos.includes('right') ? '5px':'auto';
+    if(bgFile){ const r=new FileReader(); r.onload=e=>{t.querySelector('.bg').src=e.target.result}; r.readAsDataURL(bgFile);}  
+    if(logoFile){ const r2=new FileReader(); r2.onload=e=>{logo.src=e.target.result}; r2.readAsDataURL(logoFile);}  
+  });
+}
+function resetAll(){
+  document.querySelectorAll('#controls input').forEach(i=>i.value='');
+  thumbs.innerHTML='';
+}
+function downloadThumb(i){
+  const t=document.getElementById('thumb'+i);
+  html2canvas(t).then(canvas=>{
+    const link=document.createElement('a');
+    link.download=`thumbnail${i+1}.png`;
+    link.href=canvas.toDataURL();
+    link.click();
+  });
+}
+</script>
+</body>
+</html>
