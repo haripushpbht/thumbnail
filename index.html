@@ -2,18 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Thumbnail Builder Pro</title>
+  <title>INTeG X</title>
   <style>
-    body { background:#000; color:#fff; font-family:Arial; padding:20px; }
+    body { background-color: #0d0d0d; color: #fff; font-family: Arial, sans-serif; padding: 20px; }
+input, select { background-color: #1a1a1a; border: 1px solid #00ff99; color: #fff; padding: 8px; border-radius: 5px; margin-bottom: 10px; width: 100%; }
+label { display: block; margin-top: 10px; font-weight: bold; color: #00ff99; }
+button { background-color: #00ff99; color: #0d0d0d; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+button:hover { background-color: #00cc7a; }
+.container { max-width: 600px; margin: auto; background: #111; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #00ff99; }
     .thumb { width:320px; height:180px; background:#111; margin:20px; position:relative; border:2px solid #0f0; display:inline-block; }
     .thumb img.bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0.3; }
     .thumb img.logo { position:absolute; width:50px; height:50px; object-fit:contain; }
     .text { position:absolute; width:100%; text-align:center; }
     #controls input, #controls select { margin:5px; }
+  .main{display:flex;} #controls{width:50%;} #thumbnails{width:50%;}
   </style>
 </head>
 <body>
-<h1>Thumbnail Generator</h1>
+<div class="main">
+<h1>INTeG X</h1>
 <div id="controls">
   <h3>Common Inputs</h3>
   Heading: <input id="heading" type="text"><br>
@@ -25,7 +32,10 @@
   Logo Image: <input id="logoimg" type="file" accept="image/*"><br>
   Heading Font Size: <input id="hsize" type="number" value="24"><br>
   Subheading Font Size: <input id="ssize" type="number" value="18"><br>
-  Text Color: <input id="color" type="color" value="#ffffff"><br>
+  Heading Color: <input id="hcolor" type="color" value="#ffffff"><br>
+  Subheading Color: <input id="scolor" type="color" value="#ffffff"><br>
+  Extra Text Color: <input id="ecolor" type="color" value="#ffffff"><br>
+  Tag Color: <input id="tcolor" type="color" value="#ffffff"><br>
   Logo Position:
   <select id="logoPos">
     <option value="top-left">Top Left</option>
@@ -33,13 +43,25 @@
     <option value="bottom-left">Bottom Left</option>
     <option value="bottom-right">Bottom Right</option>
   </select><br>
+  Font Family:
+  <select id="fontFamily">
+    <option value="Arial">Arial</option>
+    <option value="Verdana">Verdana</option>
+    <option value="Georgia">Georgia</option>
+    <option value="Tahoma">Tahoma</option>
+  </select><br>
+  <label><input type="checkbox" id="boldOpt"> Bold</label>
+  <label><input type="checkbox" id="italicOpt"> Italic</label>
+  <label><input type="checkbox" id="underlineOpt"> Underline</label><br>
   <button onclick="renderAll()">Render All</button>
+  <button onclick="resetAll()">Reset</button><br>="renderAll()">Render All</button>
   <button onclick="resetAll()">Reset</button>
 </div>
-<div id="thumbnails"></div>
+</div>
+<div id="thumbnails" style="width:50%"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-const variants = 5;
+const variants = 1;
 const thumbs = document.getElementById('thumbnails');
 for(let i=0;i<variants;i++){
   const t=document.createElement('div');
@@ -54,25 +76,36 @@ function renderAll(){
   const extra=document.getElementById('extra').value;
   const tag=document.getElementById('tag').value;
   const duration=document.getElementById('duration').value;
-  const color=document.getElementById('color').value;
+  const hcolor=document.getElementById('hcolor').value;
+  const scolor=document.getElementById('scolor').value;
+  const ecolor=document.getElementById('ecolor').value;
+  const tcolor=document.getElementById('tcolor').value;
   const hsize=document.getElementById('hsize').value;
   const ssize=document.getElementById('ssize').value;
   const logoPos=document.getElementById('logoPos').value;
+  const fontFamily=document.getElementById('fontFamily').value;
+  const bold=document.getElementById('boldOpt').checked;
+  const italic=document.getElementById('italicOpt').checked;
+  const underline=document.getElementById('underlineOpt').checked;
   const bgFile=document.getElementById('bgimg').files[0];
   const logoFile=document.getElementById('logoimg').files[0];
   thumbs.querySelectorAll('.thumb').forEach((t)=>{
     t.querySelector('.heading').textContent=heading;
     t.querySelector('.heading').style.fontSize=hsize+'px';
-    t.querySelector('.heading').style.color=color;
+    t.querySelector('.heading').style.color=hcolor;
+    t.querySelector('.heading').style.fontFamily=fontFamily;
+    t.querySelector('.heading').style.fontWeight= bold ? '700':'400';
+    t.querySelector('.heading').style.fontStyle= italic ? 'italic':'normal';
+    t.querySelector('.heading').style.textDecoration= underline ? 'underline':'none';
     t.querySelector('.sub').textContent=sub;
     t.querySelector('.sub').style.fontSize=ssize+'px';
-    t.querySelector('.sub').style.color=color;
+    t.querySelector('.sub').style.color=scolor;
     t.querySelector('.extra').textContent=extra;
-    t.querySelector('.extra').style.color=color;
+    t.querySelector('.extra').style.color=ecolor;
     t.querySelector('.tag').textContent=tag;
-    t.querySelector('.tag').style.color=color;
+    t.querySelector('.tag').style.color=tcolor;
     t.querySelector('.duration').textContent=duration;
-    t.querySelector('.duration').style.color=color;
+    t.querySelector('.duration').style.color=tcolor;
     const logo=t.querySelector('.logo');
     logo.style.top = logoPos.includes('top') ? '5px':'auto';
     logo.style.bottom = logoPos.includes('bottom') ? '5px':'auto';
@@ -96,5 +129,6 @@ function downloadThumb(i){
   });
 }
 </script>
+</div>
 </body>
 </html>
